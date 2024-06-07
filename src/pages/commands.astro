@@ -1,0 +1,21 @@
+---
+import GlobalLayout from "../layouts/GlobalLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Section from "../components/Section.astro";
+
+import { isValidCookie } from "../utils/cookie";
+import CommandList from "../components/links/CommandList.astro";
+
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!isValidCookie(token)) Astro.redirect("/");
+---
+
+<GlobalLayout title="Administration">
+  <PageHeader>Admin</PageHeader>
+  <main>
+    <Section>Command list</Section>
+    <CommandList />
+    <a href="/admin">back to admin</a>
+  </main>
+</GlobalLayout>

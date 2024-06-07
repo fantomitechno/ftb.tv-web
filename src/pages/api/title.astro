@@ -1,0 +1,54 @@
+---
+import { isValidCookie } from "../../utils/cookie";
+import { prisma } from "../../utils/database";
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!isValidCookie(token)) return new Response("", { status: 400 });
+
+const template = await prisma.template.findFirst();
+
+let title;
+if (Astro.request.method === "PUT") {
+  const data = await Astro.request.formData();
+  title = (data.get("title")?.valueOf() as string) ?? "";
+  await prisma.template.upsert({
+    update: {
+      title,
+    },
+    create: {
+      title,
+    },
+    where: {
+      channel: "fantomitechno",
+    },
+  });
+} else if (Astro.request.method === "DELETE") {
+  await prisma.template.delete({
+    where: {
+      channel: "fantomitechno",
+    },
+  });
+}
+---
+
+{
+  Astro.request.method === "GET" ? (
+    <form hx-put={`/api/title`} hx-target="this" hx-swap="outerHTML">
+      <label>Title template</label>:{" "}
+      <input type="text" name="title" value={template?.title} />
+      <br />
+      <button>Submit</button>
+      <button hx-delete={`/api/title`}>Remove</button>
+    </form>
+  ) : Astro.request.method === "PUT" ? (
+    <div hx-target="this" hx-swap="outerHTML">
+      <div>
+        <label>Title template</label>: {title}
+        <br />
+        <button hx-get={`/api/title`}>Click To Edit</button>
+      </div>
+    </div>
+  ) : (
+    <script is:inline>window.location.reload();</script>
+  )
+}
