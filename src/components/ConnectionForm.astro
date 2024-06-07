@@ -1,0 +1,31 @@
+<form onsubmit="return onClick()">
+  <div id="token-reponse"></div>
+  <input type="password" placeholder="Token" name="token" id="token" />
+</form>
+
+<script is:inline>
+  const onClick = () => {
+    makeRequestAsync();
+    return false;
+  };
+
+  const makeRequestAsync = async () => {
+    const resp = await fetch("/api/connect", {
+      body: JSON.stringify({
+        token: document.getElementById("token").value ?? "",
+      }),
+      method: "POST",
+    });
+    const data = await resp.json();
+    switch (resp.status) {
+      case 202:
+        document.cookie = "token=" + data.token;
+        window.location.reload();
+        break;
+
+      default:
+        document.getElementById("token-reponse").innerHTML = data.message;
+        break;
+    }
+  };
+</script>

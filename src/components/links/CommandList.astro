@@ -1,0 +1,19 @@
+---
+import CommandView from "./CommandView.astro";
+import { prisma } from "../../utils/database";
+
+const commands = await prisma.command.findMany();
+---
+
+<section>
+  <div>
+    {
+      commands.map((command) => {
+        return <CommandView command={command} edit={true} />;
+      })
+    }
+  </div>
+  <span hx-target="this" hx-swap="innerHTML">
+    <button hx-get={`/api/command/`}>Click To Add</button>
+  </span>
+</section>

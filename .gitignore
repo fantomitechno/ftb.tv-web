@@ -1,0 +1,12 @@
+.vscode
+.idea
+
+dist
+node_modules
+*.nogit.*
+*.nogit/
+
+.astro
+.DS_Store
+db.yml
+.env

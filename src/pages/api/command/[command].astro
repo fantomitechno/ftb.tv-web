@@ -1,0 +1,68 @@
+---
+import CommandView from "../../../components/links/CommandView.astro";
+import { isValidCookie } from "../../../utils/cookie";
+import { prisma } from "../../../utils/database";
+
+const { command: commandName } = Astro.params;
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!commandName || !isValidCookie(token))
+  return new Response("", { status: 400 });
+
+const command = await prisma.command.findFirst({
+  where: {
+    commandName: commandName,
+  },
+});
+
+if (!command) return new Response("", { status: 404 });
+
+if (Astro.request.method === "PUT") {
+  const data = await Astro.request.formData();
+  command.commandName = (data.get("name")?.valueOf() as string) ?? "";
+  command.message = (data.get("message")?.valueOf() as string).length
+    ? (data.get("message")?.valueOf() as string)
+    : null;
+  if (
+    ((await prisma.command.findFirst({
+      where: { commandName: command.commandName },
+    })) &&
+      commandName != command.commandName) ||
+    command.commandName == ""
+  )
+    return new Response("", { status: 409 });
+  await prisma.command.update({
+    where: {
+      commandName,
+    },
+    data: command,
+  });
+} else if (Astro.request.method === "DELETE") {
+  await prisma.command.delete({
+    where: {
+      commandName,
+    },
+  });
+}
+---
+
+{
+  Astro.request.method === "GET" ? (
+    <form
+      hx-put={`/api/command/${commandName}`}
+      hx-target="this"
+      hx-swap="outerHTML"
+    >
+      <label>Name</label>:{" "}
+      <input type="text" name="name" value={command.commandName} />
+      <label>Message</label>:
+      <input type="text" name="message" value={command.message} />
+      <button>Submit</button>
+      <button hx-delete={`/api/command/${commandName}`}>Remove</button>
+    </form>
+  ) : Astro.request.method === "PUT" ? (
+    <CommandView command={command} edit={true} />
+  ) : (
+    <script is:inline>window.location.reload();</script>
+  )
+}
