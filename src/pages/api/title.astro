@@ -11,23 +11,21 @@ let title;
 if (Astro.request.method === "PUT") {
   const data = await Astro.request.formData();
   title = (data.get("title")?.valueOf() as string) ?? "";
-  await prisma.template.upsert({
-    update: {
-      title,
-    },
-    create: {
-      title,
-    },
-    where: {
-      channel: "fantomitechno",
-    },
-  });
+  if (!template) {
+    await prisma.template.create({
+      data: {
+        title,
+      },
+    });
+  } else {
+    await prisma.template.updateMany({
+      data: {
+        title,
+      },
+    });
+  }
 } else if (Astro.request.method === "DELETE") {
-  await prisma.template.delete({
-    where: {
-      channel: "fantomitechno",
-    },
-  });
+  await prisma.template.deleteMany();
 }
 ---
 
@@ -39,16 +37,18 @@ if (Astro.request.method === "PUT") {
       <br />
       <button>Submit</button>
       <button hx-delete={`/api/title`}>Remove</button>
+      <style>
+        button {
+          margin: 0.15rem;
+        }
+      </style>
     </form>
-  ) : Astro.request.method === "PUT" ? (
-    <div hx-target="this" hx-swap="outerHTML">
-      <div>
-        <label>Title template</label>: {title}
-        <br />
-        <button hx-get={`/api/title`}>Click To Edit</button>
-      </div>
-    </div>
   ) : (
-    <script is:inline>window.location.reload();</script>
+    <div hx-target="this" hx-swap="outerHTML">
+      <label>Title template</label>: <b>{title?.replace("{}", "{title}")}</b>
+      <button id="title-button" hx-get={`/api/title`}>
+        {title ? "Click To Edit" : "Add"}
+      </button>
+    </div>
   )
 }

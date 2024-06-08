@@ -1,5 +1,5 @@
 ---
-import CommandView from "../../../components/links/CommandView.astro";
+import CommandView from "../../../components/command/CommandView.astro";
 import { isValidCookie } from "../../../utils/cookie";
 import { prisma } from "../../../utils/database";
 
@@ -23,6 +23,8 @@ if (Astro.request.method === "PUT") {
   command.message = (data.get("message")?.valueOf() as string).length
     ? (data.get("message")?.valueOf() as string)
     : null;
+  command.isMod = data.has("isMod");
+  command.reply = data.has("reply");
   if (
     ((await prisma.command.findFirst({
       where: { commandName: command.commandName },
@@ -57,6 +59,18 @@ if (Astro.request.method === "PUT") {
       <input type="text" name="name" value={command.commandName} />
       <label>Message</label>:
       <input type="text" name="message" value={command.message} />
+      <label>Is Mod only</label>:
+      {command.isMod ? (
+        <input type="checkbox" name="isMod" value="mod" checked />
+      ) : (
+        <input type="checkbox" name="isMod" value="mod" />
+      )}
+      <label>Use reply</label>:
+      {command.reply ? (
+        <input type="checkbox" name="reply" value="reply" checked />
+      ) : (
+        <input type="checkbox" name="reply" value="reply" />
+      )}
       <button>Submit</button>
       <button hx-delete={`/api/command/${commandName}`}>Remove</button>
     </form>

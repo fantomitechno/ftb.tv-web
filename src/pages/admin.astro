@@ -3,45 +3,17 @@ import GlobalLayout from "../layouts/GlobalLayout.astro";
 import PageHeader from "../components/PageHeader.astro";
 import Section from "../components/Section.astro";
 import ConnectionForm from "../components/ConnectionForm.astro";
+import AdminView from "../components/AdminView.astro";
 
 import { isValidCookie } from "../utils/cookie";
-import { prisma } from "../utils/database";
 
 const token = Astro.cookies.get("token")?.value ?? "";
-let title;
-let connected;
-if (isValidCookie(token)) {
-  title = (await prisma.template.findFirst())?.title;
-  connected = Boolean(await prisma.token.findFirst());
-}
 ---
 
 <GlobalLayout title="Administration">
   <PageHeader>Admin</PageHeader>
   <main>
     <Section>This is the admin page :D</Section>
-    {
-      !isValidCookie(token) ? (
-        <ConnectionForm />
-      ) : (
-        <section>
-          <a
-            href={`https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${process.env.TWITCH_ID}&redirect_uri=https://${process.env.REDIRECT_URI}/api/twitch&scope=user:edit:broadcast+channel:moderate+channel:read:subscriptions+channel:edit:commercial+channel:read:hype_train+channel:manage:broadcast&state=c3ab8aa609ea11e793ae92361f002671`}
-          >
-            Connect to twitch
-          </a>
-          {!connected && <>Your account isn't connected!</>}
-          <br />
-          Go check the <a href="/commands">commands</a>
-          <div hx-target="this" hx-swap="outerHTML">
-            <div>
-              <label>Title template</label>: {title}
-              <br />
-              <button hx-get={`/api/title`}>Click To Edit</button>
-            </div>
-          </div>
-        </section>
-      )
-    }
+    {!isValidCookie(token) ? <ConnectionForm /> : <AdminView />}
   </main>
 </GlobalLayout>
