@@ -1,0 +1,33 @@
+---
+import type { Command } from "@prisma/client";
+
+interface Props {
+  command: Command;
+  edit?: boolean;
+}
+
+const { command, edit = false } = Astro.props;
+---
+
+<div class="command" hx-target="this" hx-swap="outerHTML">
+  <div>
+    <label>Name</label>: {command.commandName}
+    <label>Message</label>: {command.message ?? <s>No message</s>}
+    <label>Is Mod only</label>: {command.isMod ? "Yes" : "No"}
+    <label>Use reply</label>: {command.reply ? "Yes" : "No"}
+    {
+      edit && (
+        <button hx-get={`/api/command/${command.commandName}`}>
+          Click To Edit
+        </button>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .command {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+</style>
