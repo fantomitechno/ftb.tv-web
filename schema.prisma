@@ -22,5 +22,19 @@ model Token {
 }
 
 model Template {
-  title   String @id
+  title String @id
+}
+
+model Warning {
+  id     Int      @id @default(autoincrement())
+  user   User     @relation(fields: [userId], references: [id])
+  date   DateTime @default(now())
+  reason String
+  userId String
+}
+
+model User {
+  name    String
+  id      String    @id
+  Warning Warning[]
 }

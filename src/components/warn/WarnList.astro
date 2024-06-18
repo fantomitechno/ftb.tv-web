@@ -1,0 +1,26 @@
+---
+import WarnView from "./WarnView.astro";
+import { prisma } from "../../utils/database";
+
+const warns = await prisma.warning.findMany({
+  include: {
+    user: true,
+  },
+});
+---
+
+<section>
+  <div>
+    {
+      warns.map((warn) => {
+        return <WarnView warn={warn} edit={true} />;
+      })
+    }
+  </div>
+</section>
+
+<style>
+  section {
+    padding-top: 1rem;
+  }
+</style>

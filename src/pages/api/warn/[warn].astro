@@ -1,0 +1,59 @@
+---
+import WarnView from "../../../components/warn/WarnView.astro";
+import { isValidCookie } from "../../../utils/cookie";
+import { prisma } from "../../../utils/database";
+
+const { warn: warnId } = Astro.params;
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!warnId || !isValidCookie(token)) return new Response("", { status: 400 });
+
+const warn = await prisma.warning.findFirst({
+  where: {
+    id: Number(warnId),
+  },
+  include: {
+    user: true,
+  },
+});
+
+if (!warn) return new Response("", { status: 404 });
+
+if (Astro.request.method === "PUT") {
+  const data = await Astro.request.formData();
+  const reason = data.get("reason")?.valueOf() as string;
+  warn.reason = reason;
+  await prisma.warning.update({
+    where: {
+      id: Number(warnId),
+    },
+    data: {
+      reason,
+    },
+  });
+} else if (Astro.request.method === "DELETE") {
+  await prisma.warning.delete({
+    where: {
+      id: Number(warnId),
+    },
+  });
+}
+---
+
+{
+  Astro.request.method === "GET" ? (
+    <form hx-put={`/api/warn/${warnId}`} hx-target="this" hx-swap="outerHTML">
+      <label>Id</label>: {warn.id}
+      <label>Date</label>: {warn.date.toISOString()}
+      <label>User</label>: {warn.user.name}
+      <label>Reason</label>:
+      <input type="text" name="reason" value={warn.reason} />
+      <button>Submit</button>
+      <button hx-delete={`/api/warn/${warnId}`}>Remove</button>
+    </form>
+  ) : Astro.request.method === "PUT" ? (
+    <WarnView warn={warn} edit={true} />
+  ) : (
+    <script is:inline>window.location.reload();</script>
+  )
+}

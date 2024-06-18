@@ -17,6 +17,9 @@ const connected = Boolean(await prisma.token.findFirst());
   <p>
     Go check the <a href="/commands">commands</a>
   </p>
+  <p>
+    Go check the <a href="/warns">warns</a>
+  </p>
   <div hx-target="this" hx-swap="outerHTML">
     <label>Title template</label>: <b>{title?.replace("{}", "{title}")}</b>
     <button hx-get={`/api/title`}>

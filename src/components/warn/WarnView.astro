@@ -1,0 +1,27 @@
+---
+import type { Warning, User } from "@prisma/client";
+
+interface Props {
+  warn: Warning & { user: User };
+  edit?: boolean;
+}
+
+const { warn, edit = false } = Astro.props;
+---
+
+<div class="warn" hx-target="this" hx-swap="outerHTML">
+  <div>
+    <label>Id</label>: {warn.id}
+    <label>Date</label>: {warn.date.toISOString()}
+    <label>User</label>: {warn.user.name}
+    <label>Reason</label>: {warn.reason}
+    {edit && <button hx-get={`/api/warn/${warn.id}`}>Click To Edit</button>}
+  </div>
+</div>
+
+<style>
+  .warn {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+</style>
