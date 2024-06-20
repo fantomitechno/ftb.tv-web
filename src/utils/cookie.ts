@@ -6,7 +6,6 @@ const cookies = new Map<string, { expritation: number, channel: string, channelI
 const isValidCookie = (cookie: string) => {
   clearCookies();
   const value = cookies.get(cookie);
-  console.log(cookie, value)
   return value && value.expritation > Date.now() && channels.includes(value.channel);
 }
 
