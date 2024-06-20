@@ -28,6 +28,7 @@ if (Astro.request.method === "PUT") {
     : null;
   command.isMod = data.has("isMod");
   command.reply = data.has("reply");
+  command.cooldown = Number((data.get("cd")?.valueOf() as string) ?? "10");
   if (
     ((await prisma.command.findFirst({
       where: { commandName: command.commandName, channelId },
@@ -80,6 +81,8 @@ if (Astro.request.method === "PUT") {
       ) : (
         <input type="checkbox" name="reply" value="reply" />
       )}
+      <label>Cooldown</label>:
+      <input type="number" name="cd" value={command.cooldown} />
       <button>Submit</button>
       <button hx-delete={`/api/command/${commandName}`}>Remove</button>
     </form>

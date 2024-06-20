@@ -15,6 +15,7 @@ const { command, edit = false } = Astro.props;
     <label>Message</label>: {command.message ?? <s>No message</s>}
     <label>Is Mod only</label>: {command.isMod ? "Yes" : "No"}
     <label>Use reply</label>: {command.reply ? "Yes" : "No"}
+    <label>Cooldown</label>: {command.cooldown}s
     {
       edit && (
         <button hx-get={`/api/command/${command.commandName}`}>
