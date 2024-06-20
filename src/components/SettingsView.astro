@@ -1,0 +1,37 @@
+---
+import type { Settings } from "@prisma/client";
+import Section from "./Section.astro";
+
+interface Props {
+  settings: Settings;
+  hideSection?: boolean;
+}
+
+const { settings, hideSection } = Astro.props;
+---
+
+{!hideSection && <Section>Settings</Section>}
+{!hideSection && <a href="/admin">back to admin</a>}
+{
+  !hideSection && (
+    <>
+      <br />
+      <br />
+    </>
+  )
+}
+<div hx-target="this" hx-swap="outerHTML">
+  <label>Title template</label>: <b>
+    {settings.title}
+  </b>
+  <br />
+  <label>Anti Duplicate characters</label>:
+  {settings.antiDuplicate ? "True" : "False"}
+  <br />
+  <label>Anti Upper Case</label>:
+  {settings.antiUpperCase ? "True" : "False"}
+  <br />
+  <button hx-get={`/api/settings`}>
+    {"Click To Edit"}
+  </button>
+</div>

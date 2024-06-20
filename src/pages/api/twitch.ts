@@ -1,13 +1,19 @@
 import type { APIRoute } from "astro";
 import { prisma } from "../../utils/database";
+import { createCookie } from "../../utils/cookie";
 
 interface TokenResponse {
   access_token: string
   expires_in: number
   refresh_token: string
-  scope: string[]
   token_type: string
 }
+
+export interface SimplifiedUserResponse {
+  id: string,
+  login: string
+}
+
 
 const getToken = async (code: string) => {
   const res = await fetch(
@@ -21,17 +27,34 @@ const getToken = async (code: string) => {
   const oldToken = await prisma.token.findFirst();
   if (oldToken) await prisma.token.delete({ where: oldToken });
 
+  const userRes = await fetch("https://api.twitch.tv/helix/users",
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${json.access_token}`,
+        "Client-Id": process.env.TWITCH_ID!,
+        "Content-Type": "application/json",
+      }
+    }
+  )
+
+  const user: SimplifiedUserResponse = (await userRes.json()).data[0];
+
   await prisma.token.create({
     data: {
+      channelId: user.id,
       accessToken: json.access_token,
       expiresIn: json.expires_in,
       refreshToken: json.refresh_token
     }
   });
+
+  return user
 };
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const code = url.searchParams.get("code");
-  await getToken(<string>code);
-  return new Response("Got token");
+  const user = await getToken(code!);
+  cookies.set("token", createCookie(user.login, user.id), { path: "/" });
+  return redirect("/admin", 302);
 }

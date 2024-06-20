@@ -2,7 +2,13 @@
 import CommandView from "./CommandView.astro";
 import { prisma } from "../../utils/database";
 
-const commands = await prisma.command.findMany();
+interface Props {
+  channelId: string;
+}
+
+const { channelId } = Astro.props;
+
+const commands = await prisma.command.findMany({ where: { channelId } });
 ---
 
 <section>

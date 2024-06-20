@@ -1,20 +1,29 @@
 import { randomUUID } from 'crypto';
 
-
-const cookies = new Map<string, number>();
+const channels = process.env.CHANNELS!.split(",");
+const cookies = new Map<string, { expritation: number, channel: string, channelId: string }>();
 
 const isValidCookie = (cookie: string) => {
   clearCookies();
-  const expiration = cookies.get(cookie) ?? 0;
-  return expiration > Date.now();
+  const value = cookies.get(cookie);
+  console.log(cookie, value)
+  return value && value.expritation > Date.now() && channels.includes(value.channel);
 }
 
-const createCookie = () => {
+const createCookie = (channel: string, channelId: string) => {
   const uuid = randomUUID()
   cookies.set(
     uuid,
-    Date.now() + 20 * 60 * 1000)
+    {
+      expritation: Date.now() + 20 * 60 * 1000,
+      channel,
+      channelId
+    })
   return uuid;
+}
+
+const getChannel = (cookie: string) => {
+  return cookies.get(cookie)!.channelId;
 }
 
 const deleteCookie = (cookie: string) => {
@@ -23,8 +32,8 @@ const deleteCookie = (cookie: string) => {
 
 const clearCookies = () => {
   let cleared = 0;
-  for (const [cookie, expiration] of cookies.entries()) {
-    if (expiration < Date.now()) {
+  for (const [cookie, value] of cookies.entries()) {
+    if (value.expritation < Date.now()) {
       cookies.delete(cookie);
       cleared++;
     }
@@ -32,4 +41,4 @@ const clearCookies = () => {
   return cleared;
 }
 
-export { isValidCookie, createCookie, deleteCookie, clearCookies };
+export { isValidCookie, createCookie, deleteCookie, clearCookies, getChannel };

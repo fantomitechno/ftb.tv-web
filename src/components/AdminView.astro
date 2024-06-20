@@ -1,8 +1,15 @@
 ---
 import { prisma } from "../utils/database";
 
-const title = (await prisma.template.findFirst())?.title;
-const connected = Boolean(await prisma.token.findFirst());
+interface Props {
+  channelId: string;
+}
+
+const { channelId } = Astro.props;
+
+const connected = Boolean(
+  await prisma.token.findFirst({ where: { channelId } }),
+);
 ---
 
 <section>
@@ -10,7 +17,7 @@ const connected = Boolean(await prisma.token.findFirst());
     <a
       href={`https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${process.env.TWITCH_ID}&redirect_uri=https://${process.env.REDIRECT_URI}/api/twitch&scope=user:edit:broadcast+channel:moderate+channel:read:subscriptions+channel:edit:commercial+channel:read:hype_train+channel:manage:broadcast&state=c3ab8aa609ea11e793ae92361f002671`}
     >
-      Connect to twitch
+      Click here to reconnect to twitch
     </a>
     {!connected && <>Your account isn't connected!</>}
   </p>
@@ -20,16 +27,4 @@ const connected = Boolean(await prisma.token.findFirst());
   <p>
     Go check the <a href="/warns">warns</a>
   </p>
-  <div hx-target="this" hx-swap="outerHTML">
-    <label>Title template</label>: <b>{title?.replace("{}", "{title}")}</b>
-    <button hx-get={`/api/title`}>
-      {title ? "Click To Edit" : "Add"}
-    </button>
-  </div>
 </section>
-
-<style is:inline>
-  #title-button {
-    margin-left: 0.3rem;
-  }
-</style>

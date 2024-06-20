@@ -1,0 +1,77 @@
+---
+import SettingsView from "../../components/SettingsView.astro";
+import { getChannel, isValidCookie } from "../../utils/cookie";
+import { prisma } from "../../utils/database";
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!isValidCookie(token)) return new Response("", { status: 400 });
+
+const channelId = getChannel(token);
+
+let settings = await prisma.settings.findFirst({ where: { channelId } });
+if (!settings) settings = await prisma.settings.create({ data: { channelId } });
+
+if (Astro.request.method === "DELETE") {
+  await prisma.settings.update({
+    where: {
+      channelId
+    },
+    data: {
+      title: "{}",
+      antiDuplicate: true,
+      antiUpperCase: true
+    }
+  })
+}
+
+if (Astro.request.method === "PUT") {
+  const data = await Astro.request.formData();
+  settings.title = data.get("title")?.valueOf() as string;
+  settings.antiDuplicate = data.has("antiDup");
+  settings.antiUpperCase = data.has("antiUpper");
+
+  await prisma.settings.update({
+    where: {
+      channelId
+    },
+    data: settings
+  })
+}
+---
+
+{["POST", "PUT"].includes(Astro.request.method) && <SettingsView settings={settings!} hideSection={Astro.request.method === "PUT"} />}
+
+{
+Astro.request.method === "GET" && (
+<form hx-put={`/api/settings`} hx-target="this" hx-swap="outerHTML">
+  <label>Title template</label>:
+  <input type="text" name="title" value={settings.title} />
+  <br />
+  <label>Anti Duplicate characters</label>:
+  {settings.antiDuplicate ? (
+    <input type="checkbox" name="antiDup" value="dup" checked />
+  ) : (
+    <input type="checkbox" name="antiDup" value="dup" />
+  )}
+  <br />
+  <label>Anti Upper Case</label>:
+  {settings.antiUpperCase ? (
+    <input type="checkbox" name="antiUpper" value="antiUpper" checked />
+  ) : (
+    <input type="checkbox" name="antiUpper" value="antiUpper" />
+  )}
+  <br />
+  <button>Submit</button>
+  <button hx-delete={`/api/settings`}>Reset</button>
+  <style>
+    button {
+      margin: 0.15rem;
+    }
+  </style>
+</form>
+)
+}
+
+{
+  Astro.request.method === "DELETE" && <script is:inline>window.location.reload()</script>
+}

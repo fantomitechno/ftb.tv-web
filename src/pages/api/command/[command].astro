@@ -1,6 +1,6 @@
 ---
 import CommandView from "../../../components/command/CommandView.astro";
-import { isValidCookie } from "../../../utils/cookie";
+import { getChannel, isValidCookie } from "../../../utils/cookie";
 import { prisma } from "../../../utils/database";
 
 const { command: commandName } = Astro.params;
@@ -9,9 +9,12 @@ const token = Astro.cookies.get("token")?.value ?? "";
 if (!commandName || !isValidCookie(token))
   return new Response("", { status: 400 });
 
+const channelId = getChannel(token);
+
 const command = await prisma.command.findFirst({
   where: {
     commandName: commandName,
+    channelId,
   },
 });
 
@@ -27,7 +30,7 @@ if (Astro.request.method === "PUT") {
   command.reply = data.has("reply");
   if (
     ((await prisma.command.findFirst({
-      where: { commandName: command.commandName },
+      where: { commandName: command.commandName, channelId },
     })) &&
       commandName != command.commandName) ||
     command.commandName == ""
@@ -35,21 +38,27 @@ if (Astro.request.method === "PUT") {
     return new Response("", { status: 409 });
   await prisma.command.update({
     where: {
-      commandName,
+      channelCommand: {
+        channelId,
+        commandName,
+      },
     },
     data: command,
   });
 } else if (Astro.request.method === "DELETE") {
   await prisma.command.delete({
     where: {
-      commandName,
+      channelCommand: {
+        channelId,
+        commandName,
+      },
     },
   });
 }
 ---
 
 {
-  Astro.request.method === "GET" ? (
+  Astro.request.method === "GET" && (
     <form
       hx-put={`/api/command/${commandName}`}
       hx-target="this"
@@ -74,9 +83,15 @@ if (Astro.request.method === "PUT") {
       <button>Submit</button>
       <button hx-delete={`/api/command/${commandName}`}>Remove</button>
     </form>
-  ) : Astro.request.method === "PUT" ? (
+  )
+}
+{
+  Astro.request.method === "PUT" && (
     <CommandView command={command} edit={true} />
-  ) : (
+  )
+}
+{
+  Astro.request.method === "DELETE" && (
     <script is:inline>window.location.reload();</script>
   )
 }

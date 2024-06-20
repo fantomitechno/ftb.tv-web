@@ -3,12 +3,14 @@ import GlobalLayout from "../layouts/GlobalLayout.astro";
 import PageHeader from "../components/PageHeader.astro";
 import Section from "../components/Section.astro";
 
-import { isValidCookie } from "../utils/cookie";
+import { getChannel, isValidCookie } from "../utils/cookie";
 import WarnList from "../components/warn/WarnList.astro";
 
 const token = Astro.cookies.get("token")?.value ?? "";
 
 if (!isValidCookie(token)) Astro.redirect("/");
+
+const channelId = getChannel(token);
 ---
 
 <GlobalLayout title="Administration">
@@ -16,6 +18,6 @@ if (!isValidCookie(token)) Astro.redirect("/");
   <main>
     <Section>Warning list</Section>
     <a href="/admin">back to admin</a>
-    <WarnList />
+    <WarnList channelId={channelId} />
   </main>
 </GlobalLayout>

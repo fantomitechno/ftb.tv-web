@@ -1,10 +1,12 @@
 ---
-import { isValidCookie } from "../../../utils/cookie";
+import { getChannel, isValidCookie } from "../../../utils/cookie";
 import { prisma } from "../../../utils/database";
 
 const token = Astro.cookies.get("token")?.value ?? "";
 
 if (!isValidCookie(token)) return new Response("", { status: 403 });
+
+const channelId = getChannel(token);
 
 if (Astro.request.method === "POST") {
   const data = await Astro.request.formData();
@@ -13,10 +15,11 @@ if (Astro.request.method === "POST") {
     message: (data.get("message")?.valueOf() as string).length
       ? (data.get("message")?.valueOf() as string)
       : null,
+    channelId,
   };
   if (
     (await prisma.command.findFirst({
-      where: { commandName: command.commandName },
+      where: { commandName: command.commandName, channelId },
     })) ||
     command.commandName == ""
   )
@@ -28,7 +31,7 @@ if (Astro.request.method === "POST") {
 ---
 
 {
-  Astro.request.method === "GET" ? (
+  Astro.request.method === "GET" && (
     <form hx-post={`/api/command`} hx-target="this" hx-swap="outerHTML">
       <label>Name</label>: <input type="text" name="name" />
       <label>Message</label>:
@@ -36,9 +39,15 @@ if (Astro.request.method === "POST") {
       <button>Submit</button>
       <button hx-delete={`/api/link`}>Cancel</button>
     </form>
-  ) : Astro.request.method === "POST" ? (
+  )
+}
+{
+  Astro.request.method === "POST" && (
     <script is:inline>window.location.reload();</script>
-  ) : (
+  )
+}
+{
+  Astro.request.method === "GET" && (
     <button hx-get={`/api/link`}>Click To Add</button>
   )
 }

@@ -2,7 +2,16 @@
 import WarnView from "./WarnView.astro";
 import { prisma } from "../../utils/database";
 
+interface Props {
+  channelId: string;
+}
+
+const { channelId } = Astro.props;
+
 const warns = await prisma.warning.findMany({
+  where: {
+    channelId,
+  },
   include: {
     user: true,
   },
