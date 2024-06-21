@@ -46,8 +46,4 @@ if (Astro.request.method === "POST") {
     <script is:inline>window.location.reload();</script>
   )
 }
-{
-  Astro.request.method === "GET" && (
-    <button hx-get={`/api/link`}>Click To Add</button>
-  )
-}
+{Astro.request.method === "GET" && <button hx-get={`/api/link`}>Add</button>}

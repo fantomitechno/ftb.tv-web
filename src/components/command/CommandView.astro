@@ -18,9 +18,7 @@ const { command, edit = false } = Astro.props;
     <label>Cooldown</label>: {command.cooldown}s
     {
       edit && (
-        <button hx-get={`/api/command/${command.commandName}`}>
-          Click To Edit
-        </button>
+        <button hx-get={`/api/command/${command.commandName}`}>Edit</button>
       )
     }
   </div>

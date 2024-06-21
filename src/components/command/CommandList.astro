@@ -20,7 +20,7 @@ const commands = await prisma.command.findMany({ where: { channelId } });
     }
   </div>
   <span hx-target="this" hx-swap="innerHTML">
-    <button id="add" hx-get={`/api/command/`}>Click To Add</button>
+    <button id="add" hx-get={`/api/command/`}>Add</button>
   </span>
 </section>
 

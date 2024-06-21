@@ -15,7 +15,7 @@ const { warn, edit = false } = Astro.props;
     <label>Date</label>: {warn.date.toISOString()}
     <label>User</label>: {warn.user.name}
     <label>Reason</label>: {warn.reason}
-    {edit && <button hx-get={`/api/warn/${warn.id}`}>Click To Edit</button>}
+    {edit && <button hx-get={`/api/warn/${warn.id}`}>Edit</button>}
   </div>
 </div>
 

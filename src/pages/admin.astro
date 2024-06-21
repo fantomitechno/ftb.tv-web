@@ -16,7 +16,7 @@ const token = Astro.cookies.get("token")?.value ?? "";
     {
       !isValidCookie(token) ? (
         <a
-          href={`https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${process.env.TWITCH_ID}&redirect_uri=https://${process.env.REDIRECT_URI}/api/twitch&scope=user:edit:broadcast+channel:moderate+channel:read:subscriptions+channel:edit:commercial+channel:read:hype_train+channel:manage:broadcast&state=c3ab8aa609ea11e793ae92361f002671`}
+          href={`https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${process.env.TWITCH_ID}&redirect_uri=https://${process.env.REDIRECT_URI}/api/twitch&scope=user:edit:broadcast+channel:read:subscriptions+channel:edit:commercial+channel:read:hype_train+channel:manage:broadcast`}
         >
           Connect to twitch
         </a>
