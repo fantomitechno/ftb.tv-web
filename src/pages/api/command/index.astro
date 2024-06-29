@@ -37,7 +37,7 @@ if (Astro.request.method === "POST") {
       <label>Message</label>:
       <input type="text" name="message" />
       <button>Submit</button>
-      <button hx-delete={`/api/link`}>Cancel</button>
+      <button hx-delete={`/api/command`}>Cancel</button>
     </form>
   )
 }
@@ -46,4 +46,8 @@ if (Astro.request.method === "POST") {
     <script is:inline>window.location.reload();</script>
   )
 }
-{Astro.request.method === "GET" && <button hx-get={`/api/link`}>Add</button>}
+{
+  Astro.request.method === "DELETE" && (
+    <button hx-get={`/api/command`}>Add</button>
+  )
+}

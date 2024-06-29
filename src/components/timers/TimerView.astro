@@ -1,0 +1,26 @@
+---
+import type { Timer } from "@prisma/client";
+
+interface Props {
+  timer: Timer;
+  edit?: boolean;
+}
+
+const { timer, edit = false } = Astro.props;
+---
+
+<div class="timer" hx-target="this" hx-swap="outerHTML">
+  <div>
+    <label>Message</label>: {timer.message}
+    <label>Timing</label>: {timer.repeatTime}s
+    <label>Number of messages</label>: {timer.nbMessage ?? 0}
+    {edit && <button hx-get={`/api/timer/${timer.id}`}>Edit</button>}
+  </div>
+</div>
+
+<style>
+  .timer {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+</style>

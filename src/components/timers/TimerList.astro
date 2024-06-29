@@ -1,0 +1,35 @@
+---
+import TimerView from "./TimerView.astro";
+import { prisma } from "../../utils/database";
+
+interface Props {
+  channelId: string;
+}
+
+const { channelId } = Astro.props;
+
+const timers = await prisma.timer.findMany({ where: { channelId } });
+---
+
+<section>
+  <div>
+    {
+      timers.map((timer) => {
+        return <TimerView timer={timer} edit={true} />;
+      })
+    }
+  </div>
+  <span hx-target="this" hx-swap="innerHTML">
+    <button id="add" hx-get={`/api/timer/`}>Add</button>
+  </span>
+</section>
+
+<style>
+  section {
+    padding-top: 1rem;
+  }
+
+  #add {
+    margin-top: 0.5rem;
+  }
+</style>

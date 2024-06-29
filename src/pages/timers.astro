@@ -1,0 +1,23 @@
+---
+import GlobalLayout from "../layouts/GlobalLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Section from "../components/Section.astro";
+
+import { getChannel, isValidCookie } from "../utils/cookie";
+import TimerList from "../components/timers/TimerList.astro";
+
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!isValidCookie(token)) Astro.redirect("/");
+
+const channelId = getChannel(token);
+---
+
+<GlobalLayout title="Administration">
+  <PageHeader>Admin</PageHeader>
+  <main>
+    <Section>Timer list</Section>
+    <a href="/admin">back to admin</a>
+    <TimerList channelId={channelId} />
+  </main>
+</GlobalLayout>
