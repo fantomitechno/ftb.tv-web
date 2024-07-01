@@ -33,7 +33,7 @@ const clearCookies = () => {
   let cleared = 0;
   for (const [cookie, value] of cookies.entries()) {
     if (value.expritation < Date.now()) {
-      cookies.delete(cookie);
+      deleteCookie(cookie);
       cleared++;
     }
   }

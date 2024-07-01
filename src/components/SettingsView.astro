@@ -31,6 +31,9 @@ const { settings, hideSection } = Astro.props;
   <label>Anti Upper Case</label>:
   {settings.antiUpperCase ? "True" : "False"}
   <br />
+  <label>Number of Warn before getting a ban</label>:
+  {settings.warnsBeforeBan}
+  <br />
   <button hx-get={`/api/settings`}>
     {"Click To Edit"}
   </button>
