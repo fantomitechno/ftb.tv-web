@@ -28,7 +28,6 @@ if (Astro.request.method === "DELETE") {
 
 if (Astro.request.method === "PUT") {
   const data = await Astro.request.formData();
-  console.log(data.get("blacklist"));
   banwords.blackList = (data.get("blacklist")?.valueOf() as string)
     .split(",")
     .map((w) => w.trim())
