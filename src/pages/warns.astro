@@ -16,8 +16,9 @@ const channelId = getChannel(token);
 <GlobalLayout title="Administration">
   <PageHeader>Admin</PageHeader>
   <main>
-    <Section>Warning list</Section>
-    <a href="/admin">back to admin</a>
-    <WarnList channelId={channelId} />
+    <Section title="Warning list">
+      <a href="/admin">back to admin</a>
+      <WarnList channelId={channelId} />
+    </Section>
   </main>
 </GlobalLayout>

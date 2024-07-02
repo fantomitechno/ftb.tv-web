@@ -4,7 +4,7 @@ import PageHeader from "../components/PageHeader.astro";
 
 import { getChannel, isValidCookie } from "../utils/cookie";
 import { prisma } from "../utils/database";
-import SettingsView from "../components/SettingsView.astro";
+import SettingsSection from "../components/settings/SettingsSection.astro";
 
 const token = Astro.cookies.get("token")?.value ?? "";
 
@@ -23,7 +23,7 @@ const settings = await prisma.settings.findFirst({ where: { channelId } });
           Init channel
         </button>
       ) : (
-        <SettingsView settings={settings} />
+        <SettingsSection settings={settings} />
       )
     }
   </main>

@@ -1,0 +1,72 @@
+---
+import { isAdmin, isValidCookie } from "../../../utils/cookie";
+import { prisma } from "../../../utils/database";
+import BanWordsSection from "../../../components/banwords/BanWordsSection.astro";
+import BanWordsView from "../../../components/banwords/BanWordsView.astro";
+const token = Astro.cookies.get("token")?.value ?? "";
+
+if (!isValidCookie(token) || !isAdmin(token))
+  return new Response("", { status: 400 });
+
+let banwords = await prisma.banWords.findFirst({
+  where: { channelId: "global" },
+});
+if (!banwords)
+  banwords = await prisma.banWords.create({ data: { channelId: "global" } });
+
+if (Astro.request.method === "DELETE") {
+  await prisma.banWords.update({
+    where: {
+      channelId: "global",
+    },
+    data: {
+      blackList: [],
+      whiteList: [],
+    },
+  });
+}
+
+if (Astro.request.method === "PUT") {
+  const data = await Astro.request.formData();
+  console.log(data.get("blacklist"));
+  banwords.blackList = (data.get("blacklist")?.valueOf() as string)
+    .split(",")
+    .map((w) => w.trim())
+    .filter((w) => w.length > 0);
+
+  await prisma.banWords.update({
+    where: {
+      channelId: "global",
+    },
+    data: banwords,
+  });
+}
+---
+
+{
+  Astro.request.method === "POST" && (
+    <BanWordsSection banwords={banwords} isGlobal canEdit />
+  )
+}
+{
+  Astro.request.method === "PUT" && (
+    <BanWordsView banwords={banwords} isGlobal />
+  )
+}
+
+{
+  Astro.request.method === "GET" && (
+    <form hx-put={`/api/banwords/global`} hx-target="this" hx-swap="outerHTML">
+      <label> Blacklist: </label>
+      <textarea name="blacklist">{banwords.blackList.join(", ")}</textarea>
+      <button>Submit</button>
+      <button hx-delete={`/api/banwords/global`}>Reset</button>
+    </form>
+  )
+}
+
+{
+  Astro.request.method === "DELETE" && (
+    <script is:inline>window.location.reload()</script>
+  )
+}

@@ -56,3 +56,9 @@ model Timer {
   message    String
   nbMessage  Int?
 }
+
+model BanWords {
+  channelId String   @id
+  blackList String[] @default([])
+  whiteList String[] @default([])
+}

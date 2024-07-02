@@ -1,25 +1,13 @@
 ---
 import type { Settings } from "@prisma/client";
-import Section from "./Section.astro";
 
 interface Props {
   settings: Settings;
-  hideSection?: boolean;
 }
 
-const { settings, hideSection } = Astro.props;
+const { settings } = Astro.props;
 ---
 
-{!hideSection && <Section>Settings</Section>}
-{!hideSection && <a href="/admin">back to admin</a>}
-{
-  !hideSection && (
-    <>
-      <br />
-      <br />
-    </>
-  )
-}
 <div hx-target="this" hx-swap="outerHTML">
   <label>Title template</label>: <b>
     {settings.title}
@@ -34,7 +22,5 @@ const { settings, hideSection } = Astro.props;
   <label>Number of Warn before getting a ban</label>:
   {settings.warnsBeforeBan}
   <br />
-  <button hx-get={`/api/settings`}>
-    {"Click To Edit"}
-  </button>
+  <button hx-get={`/api/settings`}> Click To Edit </button>
 </div>

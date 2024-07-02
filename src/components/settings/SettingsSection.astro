@@ -1,0 +1,16 @@
+---
+import type { Settings } from "@prisma/client";
+import Section from "../Section.astro";
+import SettingsView from "./SettingsView.astro";
+
+interface Props {
+  settings: Settings;
+}
+
+const { settings } = Astro.props;
+---
+
+<Section title="Settings">
+  <a href="/admin">back to admin</a>
+</Section>
+<SettingsView settings={settings} />

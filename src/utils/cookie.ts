@@ -1,12 +1,18 @@
 import { randomUUID } from 'crypto';
 
 const channels = process.env.CHANNELS!.split(",");
+const admins = process.env.ADMINS!.split(",");
 const cookies = new Map<string, { expritation: number, channel: string, channelId: string }>();
 
 const isValidCookie = (cookie: string) => {
   clearCookies();
   const value = cookies.get(cookie);
   return value && value.expritation > Date.now() && channels.includes(value.channel);
+}
+
+const isAdmin = (cookie: string) => {
+  const value = cookies.get(cookie);
+  return Boolean(value && admins.includes(value.channel));
 }
 
 const createCookie = (channel: string, channelId: string) => {
@@ -40,4 +46,4 @@ const clearCookies = () => {
   return cleared;
 }
 
-export { isValidCookie, createCookie, deleteCookie, clearCookies, getChannel };
+export { isValidCookie, isAdmin, createCookie, deleteCookie, clearCookies, getChannel };

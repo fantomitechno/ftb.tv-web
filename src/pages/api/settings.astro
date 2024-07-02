@@ -1,5 +1,6 @@
 ---
-import SettingsView from "../../components/SettingsView.astro";
+import SettingsView from "../../components/settings/SettingsView.astro";
+import SettingsSection from "../../components/settings/SettingsSection.astro";
 import { getChannel, isValidCookie } from "../../utils/cookie";
 import { prisma } from "../../utils/database";
 const token = Astro.cookies.get("token")?.value ?? "";
@@ -14,15 +15,15 @@ if (!settings) settings = await prisma.settings.create({ data: { channelId } });
 if (Astro.request.method === "DELETE") {
   await prisma.settings.update({
     where: {
-      channelId
+      channelId,
     },
     data: {
       title: "{}",
       antiDuplicate: true,
       antiUpperCase: true,
-      warnsBeforeBan: 5
-    }
-  })
+      warnsBeforeBan: 5,
+    },
+  });
 }
 
 if (Astro.request.method === "PUT") {
@@ -34,49 +35,51 @@ if (Astro.request.method === "PUT") {
 
   await prisma.settings.update({
     where: {
-      channelId
+      channelId,
     },
-    data: settings
-  })
+    data: settings,
+  });
 }
 ---
 
-{["POST", "PUT"].includes(Astro.request.method) && <SettingsView settings={settings!} hideSection={Astro.request.method === "PUT"} />}
+{Astro.request.method === "POST" && <SettingsSection settings={settings!} />}
+{Astro.request.method === "PUT" && <SettingsView settings={settings!} />}
 
 {
-Astro.request.method === "GET" && (
-<form hx-put={`/api/settings`} hx-target="this" hx-swap="outerHTML">
-  <label>Title template</label>:
-  <input type="text" name="title" value={settings.title} />
-  <br />
-  <label>Anti Duplicate characters</label>:
-  {settings.antiDuplicate ? (
-    <input type="checkbox" name="antiDup" value="dup" checked />
-  ) : (
-    <input type="checkbox" name="antiDup" value="dup" />
-  )}
-  <br />
-  <label>Anti Upper Case</label>:
-  {settings.antiUpperCase ? (
-    <input type="checkbox" name="antiUpper" value="antiUpper" checked />
-  ) : (
-    <input type="checkbox" name="antiUpper" value="antiUpper" />
-  )}
-  <br />
-  <label>Number of Warn before getting a ban</label>:
-  <input type="number" name="warnsBeforeBan" value={settings.warnsBeforeBan} />
-  <br />
-  <button>Submit</button>
-  <button hx-delete={`/api/settings`}>Reset</button>
-  <style>
-    button {
-      margin: 0.15rem;
-    }
-  </style>
-</form>
-)
+  Astro.request.method === "GET" && (
+    <form hx-put={`/api/settings`} hx-target="this" hx-swap="outerHTML">
+      <label>Title template</label>:
+      <input type="text" name="title" value={settings.title} />
+      <br />
+      <label>Anti Duplicate characters</label>:
+      {settings.antiDuplicate ? (
+        <input type="checkbox" name="antiDup" value="dup" checked />
+      ) : (
+        <input type="checkbox" name="antiDup" value="dup" />
+      )}
+      <br />
+      <label>Anti Upper Case</label>:
+      {settings.antiUpperCase ? (
+        <input type="checkbox" name="antiUpper" value="antiUpper" checked />
+      ) : (
+        <input type="checkbox" name="antiUpper" value="antiUpper" />
+      )}
+      <br />
+      <label>Number of Warn before getting a ban</label>:
+      <input
+        type="number"
+        name="warnsBeforeBan"
+        value={settings.warnsBeforeBan}
+      />
+      <br />
+      <button>Submit</button>
+      <button hx-delete={`/api/settings`}>Reset</button>
+    </form>
+  )
 }
 
 {
-  Astro.request.method === "DELETE" && <script is:inline>window.location.reload()</script>
+  Astro.request.method === "DELETE" && (
+    <script is:inline>window.location.reload()</script>
+  )
 }

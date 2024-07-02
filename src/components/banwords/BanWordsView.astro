@@ -1,0 +1,58 @@
+---
+import type { BanWords } from "@prisma/client";
+
+interface Props {
+  banwords: BanWords;
+  blockEdit?: boolean | undefined;
+  isGlobal?: boolean | undefined;
+}
+
+const { banwords, blockEdit, isGlobal } = Astro.props;
+---
+
+<div hx-target="this" hx-swap="outerHTML">
+  <label> Blacklist: </label>
+  <code>
+    {
+      banwords.blackList.length
+        ? banwords.blackList.join(", ")
+        : "No blacklist defined"
+    }
+  </code>
+
+  {
+    !isGlobal && (
+      <>
+        <label> Whitelist: </label>
+        <code>
+          {banwords.whiteList.length
+            ? banwords.whiteList.join(", ")
+            : "No whitelist defined"}
+        </code>
+      </>
+    )
+  }
+
+  {
+    !blockEdit && (
+      <button hx-get={isGlobal ? `/api/banwords/global` : `/api/banwords/`}>
+        Click To Edit
+      </button>
+    )
+  }
+</div>
+
+<style is:inline>
+  code,
+  textarea {
+    width: 100%;
+    resize: none;
+    height: fit-content;
+    display: block;
+    margin: 0.5rem 0;
+    padding: 0.2rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    word-break: normal;
+  }
+</style>

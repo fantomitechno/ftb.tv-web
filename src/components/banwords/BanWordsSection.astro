@@ -1,0 +1,35 @@
+---
+import type { BanWords } from "@prisma/client";
+import BanWordsView from "./BanWordsView.astro";
+
+interface Props {
+  banwords: BanWords | null;
+  isGlobal?: boolean;
+  canEdit?: boolean;
+}
+
+const { banwords, isGlobal, canEdit } = Astro.props;
+---
+
+<section>
+  {
+    !banwords ? (
+      !isGlobal || canEdit ? (
+        <button
+          hx-post={isGlobal ? `/api/banwords/global` : `/api/banwords/`}
+          hx-swap="outerHTML"
+        >
+          Init {isGlobal ? "global banwords" : "banwords for channel"}
+        </button>
+      ) : (
+        "No global ban words are defined for now"
+      )
+    ) : (
+      <BanWordsView
+        banwords={banwords}
+        isGlobal={isGlobal}
+        blockEdit={isGlobal && !canEdit}
+      />
+    )
+  }
+</section>
