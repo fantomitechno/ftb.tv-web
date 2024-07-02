@@ -26,6 +26,9 @@ if (Astro.request.method === "PUT") {
   command.message = (data.get("message")?.valueOf() as string).length
     ? (data.get("message")?.valueOf() as string)
     : null;
+  command.fetch = (data.get("fetch")?.valueOf() as string).length
+    ? (data.get("fetch")?.valueOf() as string)
+    : null;
   command.isMod = data.has("isMod");
   command.reply = data.has("reply");
   command.cooldown = Number((data.get("cd")?.valueOf() as string) ?? "10");
@@ -69,6 +72,8 @@ if (Astro.request.method === "PUT") {
       <input type="text" name="name" value={command.commandName} />
       <label>Message</label>:
       <input type="text" name="message" value={command.message} />
+      <label>Fetch</label>:
+      <input type="text" name="fetch" value={command.fetch} />
       <label>Is Mod only</label>:
       {command.isMod ? (
         <input type="checkbox" name="isMod" value="mod" checked />
