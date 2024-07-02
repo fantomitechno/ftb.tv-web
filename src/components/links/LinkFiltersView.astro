@@ -1,0 +1,48 @@
+---
+import type { LinkFilters } from "@prisma/client";
+
+interface Props {
+  links: LinkFilters;
+}
+
+const { links } = Astro.props;
+---
+
+<div hx-target="this" hx-swap="outerHTML">
+  <label>Delete all links</label>:
+  {links.deleteAll ? "True" : "False"}<br />
+  <label> Trusted links: </label>
+  <code>
+    {
+      links.trustedLinks.length
+        ? links.trustedLinks.join(", ")
+        : "No list defined"
+    }
+  </code>
+
+  <label> Untrusted links: </label>
+  <code>
+    {
+      links.untrustedLinks.length
+        ? links.untrustedLinks.join(", ")
+        : "No list defined"
+    }
+  </code>
+
+  <button hx-get={`/api/links`}> Click To Edit </button>
+</div>
+
+<style is:inline>
+  code,
+  textarea {
+    width: 100%;
+    resize: none;
+    height: fit-content;
+    display: block;
+    margin: 0.5rem 0;
+    padding: 0.2rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    word-break: normal;
+  }
+</style>

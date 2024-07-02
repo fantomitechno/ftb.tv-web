@@ -1,0 +1,22 @@
+---
+import type { LinkFilters } from "@prisma/client";
+import LinkFiltersView from "./LinkFiltersView.astro";
+
+interface Props {
+  links: LinkFilters | null;
+}
+
+const { links } = Astro.props;
+---
+
+<section>
+  {
+    !links ? (
+      <button hx-post={`/api/links`} hx-swap="outerHTML">
+        Init bad links for channel
+      </button>
+    ) : (
+      <LinkFiltersView links={links} />
+    )
+  }
+</section>
