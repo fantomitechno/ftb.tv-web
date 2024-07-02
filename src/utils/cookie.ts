@@ -14,7 +14,7 @@ const createCookie = (channel: string, channelId: string) => {
   cookies.set(
     uuid,
     {
-      expritation: Date.now() + 20 * 60 * 1000,
+      expritation: Date.now() + 60 * 60 * 1000,
       channel,
       channelId
     })

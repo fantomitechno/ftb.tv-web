@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { prisma } from "../../utils/database";
-import { createCookie } from "../../utils/cookie";
+import { createCookie, deleteCookie } from "../../utils/cookie";
 
 interface TokenResponse {
   access_token: string
@@ -55,6 +55,8 @@ const getToken = async (code: string) => {
 export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const code = url.searchParams.get("code");
   const user = await getToken(code!);
+  const oldToken = cookies.get("token")?.value;
+  if (oldToken) deleteCookie(oldToken);
   cookies.set("token", createCookie(user.login, user.id), { path: "/" });
   return redirect("/admin", 302);
 }
