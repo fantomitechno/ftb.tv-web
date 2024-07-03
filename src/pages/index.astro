@@ -2,6 +2,8 @@
 import GlobalLayout from "../layouts/GlobalLayout.astro";
 import PageHeader from "../components/PageHeader.astro";
 import Section from "../components/Section.astro";
+
+const channels = process.env.CHANNELS!.split(",");
 ---
 
 <GlobalLayout title="fantomitechno's twitch bot">
@@ -10,6 +12,10 @@ import Section from "../components/Section.astro";
     <Fragment slot="subtitle"> being sometimes useful since 2024 </Fragment>
   </PageHeader>
   <main>
-    <Section> I wanted to have my own nightbot... so I made it yipee </Section>
+    <Section>
+      I wanted to have my own nightbot... so I made it yipee
+      <br />
+      This little bot is deployed on {channels.length} channels
+    </Section>
   </main>
 </GlobalLayout>

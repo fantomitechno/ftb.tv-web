@@ -7,7 +7,7 @@ const cookies = new Map<string, { expritation: number, channel: string, channelI
 const isValidCookie = (cookie: string) => {
   clearCookies();
   const value = cookies.get(cookie);
-  return value && value.expritation > Date.now() && channels.includes(value.channel);
+  return value && value.expritation > Date.now() && (channels.includes(value.channel) || admins.includes(value.channel));
 }
 
 const isAdmin = (cookie: string) => {

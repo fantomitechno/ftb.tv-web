@@ -14,6 +14,7 @@ export interface SimplifiedUserResponse {
   login: string
 }
 
+const channels = process.env.CHANNELS!.split(",");
 
 const getToken = async (code: string) => {
   const res = await fetch(
@@ -33,9 +34,11 @@ const getToken = async (code: string) => {
         "Content-Type": "application/json",
       }
     }
-  )
+  );
 
   const user: SimplifiedUserResponse = (await userRes.json()).data[0];
+
+  if (!channels.includes(user.login)) return;
 
   const oldToken = await prisma.token.findUnique({ where: { channelId: user.id } });
   if (oldToken) await prisma.token.delete({ where: oldToken });
@@ -49,7 +52,7 @@ const getToken = async (code: string) => {
     }
   });
 
-  return user
+  return user;
 };
 
 export const GET: APIRoute = async ({ url, cookies, redirect }) => {
@@ -57,6 +60,7 @@ export const GET: APIRoute = async ({ url, cookies, redirect }) => {
   const user = await getToken(code!);
   const oldToken = cookies.get("token")?.value;
   if (oldToken) deleteCookie(oldToken);
+  if (!user) return redirect("/", 302);
   cookies.set("token", createCookie(user.login, user.id), { path: "/" });
   return redirect("/admin", 302);
 }
