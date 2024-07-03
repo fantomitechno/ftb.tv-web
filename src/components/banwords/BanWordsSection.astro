@@ -15,12 +15,13 @@ const { banwords, isGlobal, canEdit } = Astro.props;
   {
     !banwords ? (
       !isGlobal || canEdit ? (
-        <button
-          hx-post={isGlobal ? `/api/banwords/global` : `/api/banwords/`}
-          hx-swap="outerHTML"
-        >
-          Init {isGlobal ? "global banwords" : "banwords for channel"}
-        </button>
+        isGlobal ? (
+          <button hx-post={`/api/banwords/global`} hx-swap="outerHTML">
+            Init {"global banwords"}
+          </button>
+        ) : (
+          <a href="/settings">Go init settings first</a>
+        )
       ) : (
         "No global ban words are defined for now"
       )

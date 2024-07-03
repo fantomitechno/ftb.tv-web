@@ -12,7 +12,7 @@ const token = Astro.cookies.get("token")?.value ?? "";
 if (!isValidCookie(token)) return Astro.redirect("/");
 
 const channelId = getChannel(token);
-const linkFilters = await prisma.linkFilters.findFirst({
+const linkFilters = await prisma.linkFilters.findUnique({
   where: { channelId },
 });
 ---

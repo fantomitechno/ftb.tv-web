@@ -18,8 +18,10 @@ if (Astro.request.method === "POST") {
     channelId,
   };
   if (
-    (await prisma.command.findFirst({
-      where: { commandName: command.commandName, channelId },
+    (await prisma.command.findUnique({
+      where: {
+        channelCommand: { commandName: command.commandName, channelId },
+      },
     })) ||
     command.commandName == ""
   )

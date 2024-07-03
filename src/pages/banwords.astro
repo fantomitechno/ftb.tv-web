@@ -12,9 +12,9 @@ const token = Astro.cookies.get("token")?.value ?? "";
 if (!isValidCookie(token)) return Astro.redirect("/");
 
 const channelId = getChannel(token);
-const banwords = await prisma.banWords.findFirst({ where: { channelId } });
+const banwords = await prisma.banWords.findUnique({ where: { channelId } });
 
-const globalBanwords = await prisma.banWords.findFirst({
+const globalBanwords = await prisma.banWords.findUnique({
   where: { channelId: "global" },
 });
 ---

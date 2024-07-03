@@ -12,9 +12,7 @@ const { links } = Astro.props;
 <section>
   {
     !links ? (
-      <button hx-post={`/api/links`} hx-swap="outerHTML">
-        Init bad links for channel
-      </button>
+      <a href="/settings">Go init settings first</a>
     ) : (
       <LinkFiltersView links={links} />
     )

@@ -8,7 +8,7 @@ const token = Astro.cookies.get("token")?.value ?? "";
 if (!isValidCookie(token) || !isAdmin(token))
   return new Response("", { status: 400 });
 
-let banwords = await prisma.banWords.findFirst({
+let banwords = await prisma.banWords.findUnique({
   where: { channelId: "global" },
 });
 if (!banwords)

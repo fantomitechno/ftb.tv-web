@@ -4,7 +4,7 @@ import Section from "../Section.astro";
 import SettingsView from "./SettingsView.astro";
 
 interface Props {
-  settings: Settings;
+  settings: Settings | null;
 }
 
 const { settings } = Astro.props;
@@ -13,4 +13,12 @@ const { settings } = Astro.props;
 <Section title="Settings">
   <a href="/admin">back to admin</a>
 </Section>
-<SettingsView settings={settings} />
+{
+  !settings ? (
+    <button hx-post={`/api/settings`} hx-swap="outerHTML">
+      Init channel
+    </button>
+  ) : (
+    <SettingsView settings={settings} />
+  )
+}

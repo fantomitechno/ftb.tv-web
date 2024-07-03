@@ -1,7 +1,6 @@
 ---
 import { getChannel, isValidCookie } from "../../utils/cookie";
 import { prisma } from "../../utils/database";
-import LinkFiltersSection from "../../components/links/LinkFiltersSection.astro";
 import LinkFiltersView from "../../components/links/LinkFiltersView.astro";
 const token = Astro.cookies.get("token")?.value ?? "";
 
@@ -9,9 +8,9 @@ if (!isValidCookie(token)) return new Response("", { status: 400 });
 
 const channelId = getChannel(token);
 
-let linkFilter = await prisma.linkFilters.findFirst({ where: { channelId } });
-if (!linkFilter)
-  linkFilter = await prisma.linkFilters.create({ data: { channelId } });
+let linkFilter = await prisma.linkFilters.findUniqueOrThrow({
+  where: { channelId },
+});
 
 if (Astro.request.method === "DELETE") {
   await prisma.linkFilters.update({
@@ -47,7 +46,6 @@ if (Astro.request.method === "PUT") {
 }
 ---
 
-{Astro.request.method === "POST" && <LinkFiltersSection links={linkFilter} />}
 {Astro.request.method === "PUT" && <LinkFiltersView links={linkFilter} />}
 
 {

@@ -1,6 +1,5 @@
 ---
 import SettingsView from "../../components/settings/SettingsView.astro";
-import SettingsSection from "../../components/settings/SettingsSection.astro";
 import { getChannel, isValidCookie } from "../../utils/cookie";
 import { prisma } from "../../utils/database";
 const token = Astro.cookies.get("token")?.value ?? "";
@@ -9,8 +8,21 @@ if (!isValidCookie(token)) return new Response("", { status: 400 });
 
 const channelId = getChannel(token);
 
-let settings = await prisma.settings.findFirst({ where: { channelId } });
-if (!settings) settings = await prisma.settings.create({ data: { channelId } });
+let settings = await prisma.settings.findUnique({
+  where: { channelId },
+});
+if (!settings)
+  settings = await prisma.settings.create({
+    data: {
+      channelId,
+      banwords: {
+        create: {},
+      },
+      linkFilters: {
+        create: {},
+      },
+    },
+  });
 
 if (Astro.request.method === "DELETE") {
   await prisma.settings.update({
@@ -42,7 +54,7 @@ if (Astro.request.method === "PUT") {
 }
 ---
 
-{Astro.request.method === "POST" && <SettingsSection settings={settings!} />}
+{Astro.request.method === "POST" && <SettingsView settings={settings!} />}
 {Astro.request.method === "PUT" && <SettingsView settings={settings!} />}
 
 {

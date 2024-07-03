@@ -11,20 +11,12 @@ const token = Astro.cookies.get("token")?.value ?? "";
 if (!isValidCookie(token)) return Astro.redirect("/");
 
 const channelId = getChannel(token);
-const settings = await prisma.settings.findFirst({ where: { channelId } });
+const settings = await prisma.settings.findUnique({ where: { channelId } });
 ---
 
 <GlobalLayout title="Administration">
   <PageHeader>Admin</PageHeader>
   <main>
-    {
-      !settings ? (
-        <button hx-post={`/api/settings`} hx-swap="outerHTML">
-          Init channel
-        </button>
-      ) : (
-        <SettingsSection settings={settings} />
-      )
-    }
+    <SettingsSection settings={settings} />
   </main>
 </GlobalLayout>

@@ -24,9 +24,6 @@ const getToken = async (code: string) => {
   );
   const json: TokenResponse = await res.json();
 
-  const oldToken = await prisma.token.findFirst();
-  if (oldToken) await prisma.token.delete({ where: oldToken });
-
   const userRes = await fetch("https://api.twitch.tv/helix/users",
     {
       method: "GET",
@@ -39,6 +36,9 @@ const getToken = async (code: string) => {
   )
 
   const user: SimplifiedUserResponse = (await userRes.json()).data[0];
+
+  const oldToken = await prisma.token.findUnique({ where: { channelId: user.id } });
+  if (oldToken) await prisma.token.delete({ where: oldToken });
 
   await prisma.token.create({
     data: {

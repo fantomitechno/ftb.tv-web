@@ -8,7 +8,7 @@ interface Props {
 const { channelId } = Astro.props;
 
 const connected = Boolean(
-  await prisma.token.findFirst({ where: { channelId } }),
+  await prisma.token.findUnique({ where: { channelId } }),
 );
 ---
 
